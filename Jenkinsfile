@@ -18,5 +18,18 @@ pipeline {
         sh 'docker build -t bharath3244/bharath-sapient-mealservice:latest .'
       }
     }
+    stage('Remove old containers pattern name') {
+      agent any
+      steps {
+        sh 'docker stop $(docker ps -a --filter \'name=sapient\' -q) || true'
+        sh 'docker rm $(docker ps -a --filter \'name=sapient\' -q) || true'
+      }
+    }
+    stage('Run the meal service') {
+      agent any
+      steps {
+          sh 'docker run -p 8088:8080 --name bharath-sapient-meal-service-${BUILD_NUMBER} -d bharath3244/bharath-sapient-mealservice:latest'
+      }
+    }
   }
 }
